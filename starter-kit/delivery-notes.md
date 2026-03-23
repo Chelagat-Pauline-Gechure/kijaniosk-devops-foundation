@@ -1,0 +1,7 @@
+# DevOps Delivery Notes: The Three Ways
+
+To ensure KijaniKiosk can scale sustainably, our engineering culture is built on the core principles of DevOps: Flow, Feedback, and Learning.
+
+* **Flow (Understanding and accelerating the delivery process):** We utilize a structured branch-based Git workflow (`main`, `develop`, and `feature/*`). This ensures that work is broken down into small, manageable batches. By keeping our pull requests small and focused, we reduce integration friction and accelerate the time it takes to move code from a developer's machine to production.
+* **Feedback (Building safe systems of work):** The Pull Request (PR) process is our primary feedback loop. No code merges into `develop` without peer review. In the future, this loop will be enhanced with CI/CD pipelines that run automated tests and infrastructure-as-code linting before a PR can be approved.
+* **Learning (Continual experimentation and improvement):** This Starter Kit itself is an artifact of learning. By documenting our foundational architectural decisions now, we create a shared knowledge base. We treat infrastructure as a product, meaning we expect to iterate on these blueprints as our user base grows and our understanding of the system deepens.
