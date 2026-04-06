@@ -1,0 +1,72 @@
+=== Service Accounts ===
+uid=995(kk-api) gid=983(kk-api) groups=983(kk-api),1001(kijanikiosk)
+uid=994(kk-payments) gid=982(kk-payments) groups=982(kk-payments),1001(kijanikiosk)
+uid=993(kk-logs) gid=981(kk-logs) groups=981(kk-logs),1001(kijanikiosk)
+kijanikiosk:x:1001:kk-api,kk-payments,kk-logs,chela
+=== Directory Structure ===
+total 48
+drwxrwxrwx  9 root        root        4096 Apr  6 17:48 .
+drwxr-xr-x  7 root        root        4096 Apr  1 11:01 ..
+drwxr-x---  2 kk-api      kk-api      4096 Apr  6 16:59 api
+drwxrwxrwx  2 root        root        4096 Apr  1 11:01 app
+drwxr-x---+ 2 root        kijanikiosk 4096 Apr  6 16:59 config
+drwxr-x---  2 kk-logs     kk-logs     4096 Apr  6 16:59 logs
+-rw-rw-r--  1 chela       chela        764 Apr  6 17:25 nologin-decision.md
+drwxr-x---  2 kk-payments kk-payments 4096 Apr  6 16:59 payments
+drwxrwxrwx  2 root        root        4096 Apr  6 16:59 scripts
+drwxrwxrwx  3 root        root        4096 Apr  6 16:59 shared
+-rw-rw-r--  1 chela       chela       1313 Apr  6 17:48 sudoers-policy.txt
+-rw-rw-r--  1 chela       chela       1789 Apr  6 17:29 suid-analysis.md
+=== Config Files ===
+total 16
+drwxr-x---+ 2 root kijanikiosk 4096 Apr  6 16:59 .
+drwxrwxrwx  9 root root        4096 Apr  6 17:48 ..
+-rw-r-----  1 root kijanikiosk  133 Apr  6 17:39 db.env
+-rw-r-----  1 root kijanikiosk  108 Apr  6 16:59 payments-api.env
+=== Shared Logs ===
+total 12
+drwxrwxrwx  3 root    root    4096 Apr  6 16:59 .
+drwxrwxrwx  9 root    root    4096 Apr  6 17:48 ..
+drwxrws---+ 2 kk-logs kk-logs 4096 Apr  6 16:59 logs
+=== ACLs: shared/logs ===
+# file: opt/kijanikiosk/shared/logs/
+# owner: kk-logs
+# group: kk-logs
+# flags: -s-
+user::rwx
+user:kk-payments:r-x
+user:kk-api:rwx
+user:chela:r-x
+group::rwx
+mask::rwx
+other::---
+
+=== ACLs: config ===
+# file: opt/kijanikiosk/config/
+# owner: root
+# group: kijanikiosk
+user::rwx
+user:chela:r-x
+group::r-x
+mask::r-x
+other::---
+
+=== SUID Files in /opt ===
+(empty result = PASS)
+=== Sudo Policy for chela ===
+Matching Defaults entries for chela on Pooh:
+    env_reset, mail_badpass, secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin, use_pty
+
+User chela may run the following commands on Pooh:
+    (ALL : ALL) ALL
+=== Cross-service isolation ===
+ls: cannot open directory '/opt/kijanikiosk/payments/': Permission denied
+PASS: kk-api cannot access payments/
+ls: cannot open directory '/opt/kijanikiosk/api/': Permission denied
+PASS: kk-payments cannot access api/
+DB_HOST=internal-postgres.kijanikiosk.internal
+DB_PORT=5432
+DB_NAME=kijanikiosk_prod
+DB_USER=kk_app
+DB_PASSWORD=s3cr3t-pr0d-p@ssword
+PASS: kk-api can read config
