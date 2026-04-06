@@ -1,0 +1,3 @@
+# Shell Selection Decision: /usr/sbin/nologin vs /bin/false
+
+For the KijaniKiosk service accounts, I have selected `/usr/sbin/nologin` over `/bin/false`. While both successfully prevent interactive terminal access, `/usr/sbin/nologin` is explicitly designed for service accounts and provides a polite, readable rejection message to the log/user if an SSH login is attempted. More importantly, it reliably allows targeted operational command execution via `sudo -u <service-account> <command>` without opening a full shell, which is necessary for our operational tasks and testing. `/bin/false`, by contrast, simply exits with an error code (1) and can sometimes create unpredictable edge-case behaviors with older SSH configurations or specific cron environments.

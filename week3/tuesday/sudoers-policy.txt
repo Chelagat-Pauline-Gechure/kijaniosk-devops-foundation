@@ -1,0 +1,19 @@
+# SYSTEMCTL WILDCARD ABUSE SCENARIOS
+# 
+# A sudo rule like `amina ALL=(root) /bin/systemctl` is extremely dangerous because it allows the user to pass ANY argument to systemctl as root. 
+# 
+# Scenario 1 (Privilege Escalation via Service Override): An attacker could run `sudo systemctl edit <any_service>` to open a root-level editor, or inject an `ExecStartPre` directive that executes a reverse root shell or adds their user to the sudo group upon service restart.
+# 
+# Scenario 2 (Denial of Service): An attacker could run `sudo systemctl mask sshd` to permanently disable SSH access, locking all administrators out of the server, or run `sudo systemctl halt` to immediately crash the production server.
+#
+# RESTRICTED POLICY FOR AMINA
+amina ALL=(root) NOPASSWD: /bin/systemctl restart kk-api
+amina ALL=(root) NOPASSWD: /bin/systemctl restart kk-payments
+amina ALL=(root) NOPASSWD: /bin/systemctl restart kk-logs
+amina ALL=(root) NOPASSWD: /bin/systemctl status kk-api
+amina ALL=(root) NOPASSWD: /bin/systemctl status kk-payments
+amina ALL=(root) NOPASSWD: /bin/systemctl status kk-logs
+amina ALL=(root) NOPASSWD: /bin/journalctl -u kk-api
+amina ALL=(root) NOPASSWD: /bin/journalctl -u kk-payments
+amina ALL=(root) NOPASSWD: /bin/journalctl -u kk-logs
+amina ALL=(root) NOPASSWD: sudoedit /etc/nginx/nginx.conf
