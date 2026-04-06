@@ -79,6 +79,48 @@ provision_dirs() {
     setfacl -d -m u:kk-payments:r-x "$APP_BASE/shared/logs"
 }
 
+provision_logging() {
+    log "=== Phase: Logging Configuration ==="
+    # Enable persistent journal storage
+    mkdir -p /var/log/journal
+    systemd-tmpfiles --create --prefix /var/log/journal
+    
+    # Configure size caps to prevent journal from filling disk
+    mkdir -p /etc/systemd/journald.conf.d/
+    cat > /etc/systemd/journald.conf.d/kijanikiosk.conf << 'CONF'
+[Journal]
+Storage=persistent
+Compress=yes
+SystemMaxUse=500M
+SystemMaxFileSize=50M
+CONF
+    # journald must be restarted; it does not support reload
+    systemctl restart systemd-journald
+    success "Persistent journal configured (max 500MB)"
+}
+
+provision_logrotate() {
+    log "=== Phase: Log Rotation ==="
+    cat > /etc/logrotate.d/kijanikiosk << 'EOF'
+/opt/kijanikiosk/shared/logs/*.log {
+    daily
+    missingok
+    rotate 14
+    compress
+    delaycompress
+    notifempty
+    # Added su to handle group-writable directory permissions
+    su kk-logs kijanikiosk
+    create 640 kk-logs kijanikiosk
+    sharedscripts
+    postrotate
+        systemctl reload kk-logs.service 2>/dev/null || true
+    endscript
+}
+EOF
+    success "Daily log rotation configured for application logs"
+}
+
 provision_services() {
     log "=== Phase 4: systemd Units ==="
     cat > /etc/systemd/system/kk-api.service << 'UNIT'
@@ -114,7 +156,6 @@ ProtectSystem=strict
 ProtectHome=true
 CapabilityBoundingSet=
 ReadWritePaths=/opt/kijanikiosk/shared/logs
-# Two extra directives to drop score below 3.0
 SystemCallFilter=@system-service
 RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
 
@@ -139,6 +180,9 @@ provision_firewall() {
     ufw allow 80/tcp
     ufw allow 443/tcp
     ufw allow 3000/tcp
+    # CRITICAL: Port 3001 must be allowed for external health check probes
+    # to prevent false-positives in the monitoring system.
+    ufw allow 3001/tcp
     
     ufw --force enable
 }
@@ -178,6 +222,8 @@ main() {
     provision_packages
     provision_users
     provision_dirs
+    provision_logging
+    provision_logrotate
     provision_services
     provision_firewall
     verify_state

@@ -1,0 +1,30 @@
+=== VMSTAT VERIFICATION ===
+procs -----------memory---------- ---swap-- -----io---- -system-- -------cpu-------
+ r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st gu
+ 5  0      0 15765216 366736 8565144    0    0   849  1046 10806   10 10  3 87  0  0  0
+ 5  0      0 15689964 366736 8636140    0    0     0   366 10979 17791 11  4 86  0  0  0
+ 2  0      0 15744296 366780 8576988    0    0     0   332 9064 13366 11  2 87  0  0  0
+ 1  0      0 15667372 366788 8644524    0    0     0    18 8619 13988  9  3 88  0  0  0
+ 9  0      0 15733352 366832 8588832    0    0     0   166 15710 23571 15  4 81  0  0  0
+
+=== UFW STATUS ===
+Status: active
+Logging: on (low)
+Default: deny (incoming), allow (outgoing), deny (routed)
+New profiles: skip
+
+To                         Action      From
+--                         ------      ----
+22/tcp                     ALLOW IN    Anywhere                  
+80/tcp                     ALLOW IN    Anywhere                  
+443/tcp                    ALLOW IN    Anywhere                  
+3000/tcp                   ALLOW IN    Anywhere                  
+3001/tcp                   ALLOW IN    Anywhere                  
+22/tcp (v6)                ALLOW IN    Anywhere (v6)             
+80/tcp (v6)                ALLOW IN    Anywhere (v6)             
+443/tcp (v6)               ALLOW IN    Anywhere (v6)             
+3000/tcp (v6)              ALLOW IN    Anywhere (v6)             
+3001/tcp (v6)              ALLOW IN    Anywhere (v6)             
+
+
+=== PORT 3001 AUDIT ===
