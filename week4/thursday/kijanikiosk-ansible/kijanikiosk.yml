@@ -1,0 +1,138 @@
+---
+- name: Configure KijaniKiosk servers
+  hosts: kijanikiosk
+  become: true
+  become_method: sudo
+
+  handlers:
+    - name: Reload systemd
+      ansible.builtin.systemd:
+        daemon_reload: true
+
+    - name: Restart service
+      ansible.builtin.systemd:
+        name: "{{ service_name }}.service"
+        state: restarted
+      when: ansible_facts.services is defined and
+            (service_name + '.service') in ansible_facts.services
+          
+    - name: Reload journald
+      ansible.builtin.systemd:
+        name: systemd-journald
+        state: restarted
+
+  tasks:
+    # --- PHASE 1: PACKAGES ---
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Install required packages
+      ansible.builtin.apt:
+        name:
+          - nginx
+          - curl
+          - htop
+          - sysstat
+          - ufw
+          - logrotate
+        state: present
+        install_recommends: false
+
+    # --- PHASE 2: SERVICE ACCOUNTS ---
+    - name: Create kijanikiosk system group
+      ansible.builtin.group:
+        name: "{{ service_group }}"
+        system: true
+        state: present
+
+    - name: Create service account
+      ansible.builtin.user:
+        name: "{{ service_name }}"
+        group: "{{ service_group }}"
+        system: true
+        shell: /usr/sbin/nologin
+        create_home: false
+        state: present
+
+    # --- PHASE 3: DIRECTORIES ---
+    - name: Create application directory tree
+      ansible.builtin.file:
+        path: "{{ item.path }}"
+        state: directory
+        owner: "{{ item.owner }}"
+        group: "{{ service_group }}"
+        mode: "{{ item.mode }}"
+      loop:
+        - { path: "{{ service_dir }}", owner: "{{ service_name }}", mode: "0750" }
+        - { path: "{{ log_dir }}", owner: "{{ service_name }}", mode: "0770" }
+        - { path: /opt/kijanikiosk/health, owner: "{{ service_name }}", mode: "0755" }
+        - { path: /opt/kijanikiosk/config, owner: root, mode: "0755" }
+
+    # --- PHASE 4: SYSTEMD UNIT FILE ---
+    - name: Deploy systemd unit file
+      ansible.builtin.template:
+        src: templates/service.unit.j2
+        dest: "/etc/systemd/system/{{ service_name }}.service"
+        owner: root
+        group: root
+        mode: "0644"
+      notify:
+        - Reload systemd
+        - Restart service
+
+    - name: Enable service
+      ansible.builtin.systemd:
+        name: "{{ service_name }}.service"
+        state: started
+        enabled: true
+        daemon_reload: true
+      ignore_errors: "{{ ansible_check_mode }}"
+
+    # --- PHASE 5: FIREWALL ---
+    # IMPORTANT: Allow SSH first before enabling UFW
+    # to avoid locking ourselves out
+    - name: Allow SSH
+      community.general.ufw:
+        rule: allow
+        port: "22"
+        proto: tcp
+
+    - name: Allow service port on loopback
+      community.general.ufw:
+        rule: allow
+        port: "{{ service_port | string }}"
+        proto: tcp
+        interface: lo
+        direction: in
+
+    - name: Set ufw default deny incoming
+      community.general.ufw:
+        state: enabled
+        default: deny
+        direction: incoming
+
+    # --- PHASE 6: JOURNAL PERSISTENCE ---
+    - name: Create persistent journal directory
+      ansible.builtin.file:
+        path: /var/log/journal
+        state: directory
+        owner: root
+        group: systemd-journal
+        mode: "0755"
+      notify: Reload journald
+
+    # - name: Reload journald
+    #   ansible.builtin.systemd:
+    #     name: systemd-journald
+    #     state: restarted
+
+    # --- PHASE 7: LOGROTATE ---
+    - name: Deploy logrotate configuration
+      ansible.builtin.template:
+        src: templates/logrotate.j2
+        dest: /etc/logrotate.d/kijanikiosk
+        owner: root
+        group: root
+        mode: "0644"
