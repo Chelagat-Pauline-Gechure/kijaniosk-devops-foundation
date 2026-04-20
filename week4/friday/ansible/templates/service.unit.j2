@@ -1,0 +1,23 @@
+[Unit]
+Description=KijaniKiosk {{ service_name }} Service
+After=network.target
+{% if service_name == "kk-payments" %}
+After=kk-api.service
+Wants=kk-api.service
+{% endif %}
+
+[Service]
+Type=simple
+User={{ service_name }}
+Group={{ service_group }}
+WorkingDirectory={{ service_dir }}
+ExecStart={{ service_dir }}/server --port {{ service_port }}
+Restart=on-failure
+RestartSec=5
+PrivateTmp=true
+NoNewPrivileges=true
+ProtectSystem=strict
+ReadWritePaths={{ service_dir }} {{ log_dir }}
+
+[Install]
+WantedBy=multi-user.target

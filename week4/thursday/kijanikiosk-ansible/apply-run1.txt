@@ -1,0 +1,97 @@
+
+PLAY [Configure KijaniKiosk servers] *******************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [api-staging]
+ok: [payments-staging]
+ok: [logs-staging]
+
+TASK [Update apt cache] ********************************************************
+changed: [payments-staging]
+changed: [logs-staging]
+changed: [api-staging]
+
+TASK [Install required packages] ***********************************************
+changed: [logs-staging]
+changed: [payments-staging]
+changed: [api-staging]
+
+TASK [Create kijanikiosk system group] *****************************************
+changed: [payments-staging]
+changed: [api-staging]
+changed: [logs-staging]
+
+TASK [Create service account] **************************************************
+changed: [logs-staging]
+changed: [api-staging]
+changed: [payments-staging]
+
+TASK [Create application directory tree] ***************************************
+changed: [payments-staging] => (item={'path': '/opt/kijanikiosk/payments', 'owner': 'kk-payments', 'mode': '0750'})
+changed: [logs-staging] => (item={'path': '/opt/kijanikiosk/logs', 'owner': 'kk-logs', 'mode': '0750'})
+changed: [api-staging] => (item={'path': '/opt/kijanikiosk/api', 'owner': 'kk-api', 'mode': '0750'})
+changed: [payments-staging] => (item={'path': '/opt/kijanikiosk/shared/logs', 'owner': 'kk-payments', 'mode': '0770'})
+changed: [logs-staging] => (item={'path': '/opt/kijanikiosk/shared/logs', 'owner': 'kk-logs', 'mode': '0770'})
+changed: [api-staging] => (item={'path': '/opt/kijanikiosk/shared/logs', 'owner': 'kk-api', 'mode': '0770'})
+changed: [payments-staging] => (item={'path': '/opt/kijanikiosk/health', 'owner': 'kk-payments', 'mode': '0755'})
+changed: [api-staging] => (item={'path': '/opt/kijanikiosk/health', 'owner': 'kk-api', 'mode': '0755'})
+changed: [logs-staging] => (item={'path': '/opt/kijanikiosk/health', 'owner': 'kk-logs', 'mode': '0755'})
+changed: [payments-staging] => (item={'path': '/opt/kijanikiosk/config', 'owner': 'root', 'mode': '0755'})
+changed: [api-staging] => (item={'path': '/opt/kijanikiosk/config', 'owner': 'root', 'mode': '0755'})
+changed: [logs-staging] => (item={'path': '/opt/kijanikiosk/config', 'owner': 'root', 'mode': '0755'})
+
+TASK [Deploy systemd unit file] ************************************************
+changed: [api-staging]
+changed: [logs-staging]
+changed: [payments-staging]
+
+TASK [Enable service] **********************************************************
+changed: [payments-staging]
+changed: [logs-staging]
+changed: [api-staging]
+
+TASK [Allow SSH] ***************************************************************
+changed: [payments-staging]
+changed: [api-staging]
+changed: [logs-staging]
+
+TASK [Allow service port on loopback] ******************************************
+changed: [payments-staging]
+changed: [logs-staging]
+changed: [api-staging]
+
+TASK [Set ufw default deny incoming] *******************************************
+changed: [payments-staging]
+changed: [logs-staging]
+changed: [api-staging]
+
+TASK [Create persistent journal directory] *************************************
+changed: [payments-staging]
+changed: [logs-staging]
+changed: [api-staging]
+
+TASK [Reload journald] *********************************************************
+changed: [logs-staging]
+changed: [api-staging]
+changed: [payments-staging]
+
+TASK [Deploy logrotate configuration] ******************************************
+changed: [payments-staging]
+changed: [api-staging]
+changed: [logs-staging]
+
+RUNNING HANDLER [Reload systemd] ***********************************************
+ok: [payments-staging]
+ok: [api-staging]
+ok: [logs-staging]
+
+RUNNING HANDLER [Restart service] **********************************************
+skipping: [api-staging]
+skipping: [payments-staging]
+skipping: [logs-staging]
+
+PLAY RECAP *********************************************************************
+api-staging                : ok=15   changed=13   unreachable=0    failed=0    skipped=1    rescued=0    ignored=0   
+logs-staging               : ok=15   changed=13   unreachable=0    failed=0    skipped=1    rescued=0    ignored=0   
+payments-staging           : ok=15   changed=13   unreachable=0    failed=0    skipped=1    rescued=0    ignored=0   
+

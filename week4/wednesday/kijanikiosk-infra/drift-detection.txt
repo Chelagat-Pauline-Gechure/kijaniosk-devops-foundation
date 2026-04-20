@@ -1,0 +1,53 @@
+[0m[1mdata.aws_vpc.default: Reading...[0m[0m
+[0m[1mdata.aws_ami.ubuntu_2204: Reading...[0m[0m
+[0m[1mdata.aws_ami.ubuntu_2204: Read complete after 1s [id=ami-02b2b2920b4582828][0m
+[0m[1mdata.aws_vpc.default: Read complete after 2s [id=vpc-7ba55102][0m
+[0m[1mdata.aws_subnets.default: Reading...[0m[0m
+[0m[1mmodule.app_servers["api"].aws_security_group.app: Refreshing state... [id=sg-035d4b9e749bb07a1][0m
+[0m[1mmodule.app_servers["payments"].aws_security_group.app: Refreshing state... [id=sg-0e642fc7f79ed62db][0m
+[0m[1mmodule.app_servers["logs"].aws_security_group.app: Refreshing state... [id=sg-08b67445947779e91][0m
+[0m[1mdata.aws_subnets.default: Read complete after 0s [id=eu-west-1][0m
+[0m[1mmodule.app_servers["payments"].aws_instance.this: Refreshing state... [id=i-0bc18f9747dcd9832][0m
+[0m[1mmodule.app_servers["logs"].aws_instance.this: Refreshing state... [id=i-0b933b33ae8877014][0m
+[0m[1mmodule.app_servers["api"].aws_instance.this: Refreshing state... [id=i-0762f83ae063e2731][0m
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  [33m~[0m update in-place[0m
+
+Terraform will perform the following actions:
+
+[1m  # module.app_servers["api"].aws_instance.this[0m will be updated in-place
+[0m  [33m~[0m[0m resource "aws_instance" "this" {
+        id                                   = "i-0762f83ae063e2731"
+      [33m~[0m[0m tags                                 = {
+            "Environment"  = "staging"
+            "ManagedBy"    = "terraform"
+          [31m-[0m[0m "ManualChange" = "True" [90m-> null[0m[0m
+            "Name"         = "kijanikiosk-api-staging"
+            "Service"      = "api"
+        }
+      [33m~[0m[0m tags_all                             = {
+          [31m-[0m[0m "ManualChange" = "True" [90m-> null[0m[0m
+            [90m# (4 unchanged elements hidden)[0m[0m
+        }
+        [90m# (38 unchanged attributes hidden)[0m[0m
+
+        [90m# (8 unchanged blocks hidden)[0m[0m
+    }
+
+[1mPlan:[0m [0m0 to add, 1 to change, 0 to destroy.
+[90m
+─────────────────────────────────────────────────────────────────────────────[0m
+
+Note: You didn't use the -out option to save this plan, so Terraform can't
+guarantee to take exactly these actions if you run "terraform apply" now.
+
+# --- Drift Detection Documentation ---
+# Did Terraform detect the drift? Yes
+# What the plan showed: ~ update in-place on aws_instance.this tags
+#   for module.app_servers["api"] - ManualChange tag was added manually
+# Remediation decision: REMEDIATE
+# Reason: the manual tag change was not intentional and not part of the
+# declared configuration. Running terraform apply will remove the tag
+# and restore the declared state.
