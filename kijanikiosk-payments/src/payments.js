@@ -9,4 +9,4 @@ function calculateFee(amount) {
     return true;
   }
   
-  module.exports = { calculateFee, validatePayment };
+  module.exports = { calculateFee, validatePayment };// v2 trigger
