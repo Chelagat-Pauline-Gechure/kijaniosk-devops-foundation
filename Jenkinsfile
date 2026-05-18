@@ -11,11 +11,11 @@ tools {
   }
 
   environment {
-    APP_NAME   = 'kijanikiosk-payments'
-    NEXUS_URL  = 'http://localhost:8081'
-    NEXUS_REPO = 'kijanikiosk-npm'
-    GIT_SHA    = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
-    APP_VERSION = "1.0.0-${GIT_SHA}"
+    APP_NAME    = 'kijanikiosk-payments'
+    NEXUS_URL   = 'http://localhost:8081'
+    NEXUS_REPO  = 'kijanikiosk-npm'
+    GIT_SHA     = "${env.GIT_COMMIT ? env.GIT_COMMIT.take(7) : 'unknown'}"
+    APP_VERSION = "1.0.0-${env.GIT_COMMIT ? env.GIT_COMMIT.take(7) : 'unknown'}"
   }
 
   options {
@@ -96,19 +96,24 @@ tools {
         }
       }
     }
+
+    stage('Results') {
+      steps {
+        junit allowEmptyResults: true,
+              testResults: 'kijanikiosk-payments/test-results/junit.xml'
+      }
+    }
   }
 
   post {
     always {
-      junit allowEmptyResults: true,
-            testResults: 'kijanikiosk-payments/test-results/junit.xml'
       cleanWs()
     }
     success {
-      echo "SUCCESS — ${APP_NAME}@${APP_VERSION} published to Nexus at ${NEXUS_URL}/repository/${NEXUS_REPO}/"
+      echo "SUCCESS — ${APP_NAME}@${APP_VERSION} published to Nexus."
     }
     failure {
-      echo "FAILED on stage: ${env.STAGE_NAME}. Review the build log at ${env.BUILD_URL}console"
+      echo "FAILED on stage: ${env.STAGE_NAME}. Build log: ${env.BUILD_URL}console"
     }
     changed {
       echo "Pipeline status changed to ${currentBuild.currentResult} on build #${env.BUILD_NUMBER}"
