@@ -7,7 +7,7 @@ pipeline {
   }
 
 tools {
-    nodejs 'NodeJS 18'
+    nodejs 'NodeJS v26'
   }
 
   environment {
