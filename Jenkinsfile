@@ -9,6 +9,7 @@ pipeline {
             steps {
                 sh 'echo "Build triggered for: $(git log -1 --pretty=%s)"'
                 sh 'node --version'
+                sh 'this-command-does-not-exist'
                 sh 'npm --version'
             }
         }
