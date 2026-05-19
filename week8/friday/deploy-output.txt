@@ -1,0 +1,12 @@
+]633;E;echo "=== DEPLOYMENT STATUS ===";3f6a9068-a016-4a84-895e-bd9c555bca7f]633;C=== DEPLOYMENT STATUS ===
+NAME          READY   UP-TO-DATE   AVAILABLE   AGE
+kk-payments   2/2     2            2           111s
+
+=== PODS ===
+NAME                           READY   STATUS    RESTARTS   AGE
+kk-payments-7d88598749-cxvbb   1/1     Running   0          111s
+kk-payments-7d88598749-qgps4   1/1     Running   0          111s
+
+=== REPLICASET ===
+NAME                     DESIRED   CURRENT   READY   AGE
+kk-payments-7d88598749   2         2         2       111s

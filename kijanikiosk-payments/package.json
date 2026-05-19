@@ -2,8 +2,9 @@
   "name": "kijanikiosk-payments",
   "version": "1.0.0",
   "description": "KijaniKiosk payments service",
-  "main": "src/payments.js",
+  "main": "src/server.js",
   "scripts": {
+    "start": "node src/server.js",
     "test": "jest --ci --reporters=default --reporters=jest-junit",
     "lint": "eslint src/",
     "build": "mkdir -p dist && cp -r src/* dist/ && cp package.json dist/"

@@ -1,0 +1,42 @@
+The push refers to repository [docker.io/chelagatpaulinegechure/kk-payments]
+a2553ee0afdc: Preparing
+3a971477e02f: Preparing
+a3797c1d0109: Preparing
+497407c44d2c: Preparing
+a9d9f83078ee: Preparing
+82140d9a70a7: Preparing
+f3b40b0cdb1c: Preparing
+0b1f26057bd0: Preparing
+08000c18d16d: Preparing
+82140d9a70a7: Waiting
+f3b40b0cdb1c: Waiting
+0b1f26057bd0: Waiting
+08000c18d16d: Waiting
+497407c44d2c: Pushed
+a9d9f83078ee: Pushed
+a2553ee0afdc: Pushed
+a3797c1d0109: Pushed
+3a971477e02f: Pushed
+82140d9a70a7: Pushed
+f3b40b0cdb1c: Pushed
+08000c18d16d: Pushed
+0b1f26057bd0: Pushed
+1.0.0-5014ef1: digest: sha256:b2f3b79875ea613204e5dea462142939f8ac33985d520b3be44203aca1009b3c size: 2194
+1.0.0-5014ef1: Pulling from chelagatpaulinegechure/kk-payments
+f18232174bc9: Already exists
+dd71dde834b5: Already exists
+1e5a4c89cee5: Already exists
+25ff2da83641: Already exists
+796204a7b7f0: Already exists
+fdbb914b6c47: Already exists
+5c6753ee1d0d: Already exists
+a2e30b990928: Already exists
+212e3492446d: Already exists
+Digest: sha256:b2f3b79875ea613204e5dea462142939f8ac33985d520b3be44203aca1009b3c
+Status: Downloaded newer image for chelagatpaulinegechure/kk-payments:1.0.0-5014ef1
+docker.io/chelagatpaulinegechure/kk-payments:1.0.0-5014ef1
+
+=== PULL VERIFICATION ===
+Tag pulled successfully: chelagatpaulinegechure/kk-payments:1.0.0-5014ef1
+REPOSITORY                           TAG             IMAGE ID       CREATED       SIZE
+chelagatpaulinegechure/kk-payments   1.0.0-5014ef1   70f99c3240e4   2 hours ago   127MB

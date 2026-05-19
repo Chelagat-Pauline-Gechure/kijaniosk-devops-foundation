@@ -1,0 +1,12 @@
+]633;E;echo "=== SERVICE ===";3f6a9068-a016-4a84-895e-bd9c555bca7f]633;C=== SERVICE ===
+NAME                  TYPE       CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+kk-payments-service   NodePort   10.102.182.207   <none>        3001:30001/TCP   85s
+
+=== ENDPOINTS ===
+NAME                  ENDPOINTS                         AGE
+kk-payments-service   10.244.0.3:3001,10.244.0.4:3001   85s
+
+=== NODEPORT CURL ===
+{"status":"ok","version":"1.0.0","environment":"production","port":"3001"}
+=== IN-CLUSTER DNS ===
+{"status":"ok","version":"1.0.0","environment":"production","port":"3001"}
