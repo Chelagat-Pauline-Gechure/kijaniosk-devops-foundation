@@ -1,0 +1,31 @@
+T0 (fault introduced):    06:14:55
+T1 (rollback triggered):  06:15:08
+T2 (rollback confirmed):  06:15:13
+Duration T0 to T2:        18 seconds (well under the 90-second requirement)
+
+=== MONITOR OUTPUT ===
+[06:14:37] Monitor started. Confidence window: 60s. Poll interval: 5s. Required passes: 12
+[06:14:37] Monitoring: http://127.0.0.1:80/health
+[06:14:37] [PASS 1/12] Health check OK (HTTP 200)
+[06:14:43] [PASS 2/12] Health check OK (HTTP 200)
+[06:14:48] [PASS 3/12] Health check OK (HTTP 200)
+[06:14:53] [PASS 4/12] Health check OK (HTTP 200)
+[06:14:58] [FAIL 1/3] Health check FAILED (HTTP 502)
+[06:15:03] [FAIL 2/3] Health check FAILED (HTTP 502)
+[06:15:08] [FAIL 3/3] Health check FAILED (HTTP 502)
+[06:15:08] [MONITOR FAIL] ROLLBACK TRIGGERED after 3 consecutive failures
+[06:15:08] [ROLLBACK] Rolling back to: blue
+[06:15:08] Current active environment: green
+[06:15:08] Switching to: blue (port 3000)
+[06:15:08] nginx reloaded successfully
+[06:15:08] State files updated: active=blue previous=green
+[06:15:10] Health check result: {"status":"ok","version":"v1.3.0","port":3000}
+[06:15:10] Switch complete. blue is now active.
+[06:15:10] [ROLLBACK] Rollback complete. blue is now active.
+[06:15:13] [ROLLBACK CONFIRMED] Health check after rollback: version=v1.3.0
+
+=== POST-ROLLBACK VERIFICATION ===
+Nginx health (must be v1.3.0): {"status":"ok","version":"v1.3.0","port":3000}
+Active env: blue
+Previous env: green
+=== END VERIFICATION ===
