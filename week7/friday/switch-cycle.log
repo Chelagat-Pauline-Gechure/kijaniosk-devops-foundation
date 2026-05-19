@@ -1,0 +1,24 @@
+[05:25:08] === STARTING STATE VERIFICATION ===
+[05:25:08] Blue service: active
+[05:25:08] Green service: active
+[05:25:08] Blue health: {"status":"ok","version":"v1.3.0","port":3000}
+[05:25:08] Green health: {"status":"ok","version":"v1.4.0","port":3001}
+[05:25:08] Nginx health (should be v1.3.0): {"status":"ok","version":"v1.3.0","port":3000}
+[05:25:08] Active env: blue
+[05:25:08] Previous env: none
+[05:25:08] === END STARTING STATE ===
+[05:25:40] Monitor started in separate terminal
+[05:25:40] [05:25:40] Current active environment: blue
+[05:25:40] [05:25:40] Switching to: green (port 3001)
+[05:25:40] nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+[05:25:40] nginx: configuration file /etc/nginx/nginx.conf test is successful
+[05:25:40] [05:25:40] nginx reloaded successfully
+[05:25:40] [05:25:40] State files updated: active=green previous=blue
+[05:25:42] [05:25:42] Health check result: {"status":"ok","version":"v1.4.0","port":3001}
+[05:25:42] [05:25:42] Switch complete. green is now active.
+[05:25:55] === POST-SWITCH VERIFICATION ===
+[05:25:55] Nginx health (must be v1.4.0): {"status":"ok","version":"v1.4.0","port":3001}
+[05:25:55] Active env: green
+[05:25:55] Previous env: blue
+[05:25:55] Nginx conf:     server 127.0.0.1:3001;
+[05:25:55] === END POST-SWITCH VERIFICATION ===
