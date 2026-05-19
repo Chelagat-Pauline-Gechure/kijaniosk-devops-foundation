@@ -1,0 +1,19 @@
+T0 (Pod deleted): 14:36:44
+Pod being deleted: pod/kk-payments-7d88598749-cxvbb
+NAME                           READY   STATUS    RESTARTS   AGE
+kk-payments-7d88598749-bg5ww   1/1     Running   0          43s
+kk-payments-7d88598749-qgps4   1/1     Running   0          6m4s
+T1 (replacement Running): 14:37:44
+
+=== DEPLOYMENT STILL HEALTHY ===
+NAME          READY   UP-TO-DATE   AVAILABLE   AGE
+kk-payments   2/2     2            2           6m27s
+
+=== CURRENT PODS (names differ from deleted Pod) ===
+NAME                           READY   STATUS    RESTARTS   AGE
+kk-payments-7d88598749-bg5ww   1/1     Running   0          66s
+kk-payments-7d88598749-qgps4   1/1     Running   0          6m27s
+Recovery time: 60 seconds (T0: 14:36:44 to T1: 14:37:44)
+Deleted Pod: kk-payments-7d88598749-cxvbb
+Replacement Pod: kk-payments-7d88598749-bg5ww
+Service remained available throughout - second Pod (qgps4) absorbed traffic

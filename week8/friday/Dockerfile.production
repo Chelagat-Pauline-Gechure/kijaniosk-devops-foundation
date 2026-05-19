@@ -1,0 +1,35 @@
+# Stage 1: Build stage
+FROM node:18-alpine AS builder
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci
+
+COPY src/ ./src/
+RUN npm run build
+
+# Stage 2: Production stage - minimal image
+FROM node:18-alpine AS production
+
+RUN addgroup -S kijani && adduser -S kijani -G kijani
+
+WORKDIR /app
+
+# Copy only the built files and package files
+COPY --from=builder /app/dist/ ./src/
+COPY --from=builder /app/package.json ./
+
+# No npm install needed - no production dependencies in this app
+# (package.json has only devDependencies, none needed at runtime)
+
+RUN chown -R kijani:kijani /app
+
+USER kijani
+
+EXPOSE 3001
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+  CMD wget -qO- http://localhost:3001/health || exit 1
+
+CMD ["node", "src/server.js"]
