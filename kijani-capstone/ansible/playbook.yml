@@ -1,0 +1,58 @@
+---
+- name: Configure kijani-staging namespace
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    staging_namespace: kijani-staging
+
+  tasks:
+    - name: Apply staging ConfigMap
+      kubernetes.core.k8s:
+        state: present
+        namespace: "{{ staging_namespace }}"
+        src: "{{ playbook_dir }}/../k8s/kk-payments-configmap-staging.yaml"
+
+    - name: Create kk-payments-secrets in staging
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: kk-payments-secrets
+            namespace: "{{ staging_namespace }}"
+          stringData:
+            DB_PASSWORD: staging-password-123
+            JWT_SECRET: staging-jwt-secret-456
+
+    - name: Apply kk-payments Deployment to staging
+      kubernetes.core.k8s:
+        state: present
+        namespace: "{{ staging_namespace }}"
+        src: "{{ playbook_dir }}/../k8s/kk-payments-deployment.yaml"
+
+    - name: Apply kk-payments Service to staging
+      kubernetes.core.k8s:
+        state: present
+        namespace: "{{ staging_namespace }}"
+        src: "{{ playbook_dir }}/../k8s/kk-payments-service.yaml"
+
+    - name: Wait for kk-payments to be ready in staging
+      kubernetes.core.k8s_info:
+        kind: Deployment
+        name: kk-payments
+        namespace: "{{ staging_namespace }}"
+      register: deploy_info
+      until: >
+        deploy_info.resources | length > 0 and
+        deploy_info.resources[0].status.readyReplicas is defined and
+        deploy_info.resources[0].status.readyReplicas ==
+        deploy_info.resources[0].spec.replicas
+      retries: 18
+      delay: 10
+
+    - name: Confirm staging deployment is ready
+      debug:
+        msg: "kk-payments is running in {{ staging_namespace }} with {{ deploy_info.resources[0].status.readyReplicas }} ready replicas"

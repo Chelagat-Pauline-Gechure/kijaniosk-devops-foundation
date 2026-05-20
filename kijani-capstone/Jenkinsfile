@@ -1,0 +1,111 @@
+pipeline {
+  agent { label 'host-agent' }
+
+  environment {
+    STAGING_NAMESPACE = 'kijani-staging'
+    PROD_NAMESPACE    = 'kijani-project'
+    KUBECONFIG        = '/home/jenkins-agent/.kube/config'
+  }
+
+  stages {
+
+    stage('Checkout') {
+      steps {
+        echo 'Checking out repository...'
+        checkout scm
+      }
+    }
+
+    stage('Deploy to Staging') {
+      steps {
+        dir('kijani-capstone') {
+          sh '''
+            echo "Provisioning staging namespace with Terraform..."
+            cd terraform
+            terraform init -input=false
+            terraform apply -auto-approve
+            cd ..
+
+            echo "Configuring staging with Ansible..."
+            ansible-playbook ansible/playbook.yml \
+              -i ansible/inventory/localhost.ini
+          '''
+        }
+      }
+    }
+
+    stage('Smoke Test') {
+      steps {
+        sh '''
+          echo "Waiting for kk-payments to be ready in staging..."
+          kubectl rollout status deployment/kk-payments \
+            -n kijani-staging --timeout=120s
+
+          echo "Running smoke test..."
+          PAYMENTS_POD=$(kubectl get pod \
+            -n kijani-staging \
+            -l app=kk-payments \
+            -o jsonpath="{.items[0].metadata.name}")
+
+          kubectl exec $PAYMENTS_POD \
+            -n kijani-staging -- wget -qO- http://localhost:80/ | head -5
+
+          echo "Smoke test passed"
+        '''
+      }
+    }
+
+    stage('Approve Production Deploy') {
+      steps {
+        input(
+          message: 'Staging smoke test passed. Deploy to production?',
+          ok: 'Deploy to Production',
+          submitter: 'admin',
+          parameters: [
+            string(
+              name: 'DEPLOY_REASON',
+              defaultValue: '',
+              description: 'Reason for deploying to production'
+            )
+          ]
+        )
+      }
+    }
+
+    stage('Deploy to Production') {
+      steps {
+        sh '''
+          echo "Deploying kk-payments to production namespace..."
+          kubectl apply -f kijani-capstone/k8s/kk-payments-configmap-production.yaml \
+            -n kijani-project
+          kubectl apply -f kijani-capstone/k8s/kk-payments-deployment.yaml \
+            -n kijani-project
+          kubectl apply -f kijani-capstone/k8s/kk-payments-service.yaml \
+            -n kijani-project
+
+          echo "Waiting for production rollout..."
+          kubectl rollout status deployment/kk-payments \
+            -n kijani-project --timeout=120s
+
+          echo "Production deploy complete"
+        '''
+      }
+    }
+  }
+
+  post {
+    success {
+      echo "Pipeline completed successfully"
+    }
+    failure {
+      echo "Pipeline failed — check logs above"
+      sh '''
+        echo "=== Staging pod status ==="
+        kubectl get pods -n kijani-staging || true
+        echo "=== Recent events ==="
+        kubectl get events -n kijani-staging \
+          --sort-by=.lastTimestamp | tail -10 || true
+      '''
+    }
+  }
+}
