@@ -1,9 +1,10 @@
 pipeline {
-  agent any
+  agent { label 'host-agent' }
 
   environment {
     STAGING_NAMESPACE = 'kijani-staging'
     PROD_NAMESPACE    = 'kijani-project'
+    KUBECONFIG        = '/home/jenkins-agent/.kube/config'
   }
 
   stages {
@@ -102,7 +103,8 @@ pipeline {
         echo "=== Staging pod status ==="
         kubectl get pods -n kijani-staging || true
         echo "=== Recent events ==="
-        kubectl get events -n kijani-staging --sort-by=.lastTimestamp | tail -10 || true
+        kubectl get events -n kijani-staging \
+          --sort-by=.lastTimestamp | tail -10 || true
       '''
     }
   }
