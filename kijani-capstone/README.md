@@ -73,7 +73,13 @@ Run these commands in order from a clean checkout:
     terraform apply -auto-approve
     cd ..
 
-    # 5. If kijani-staging already exists in the cluster but not in state:
+    # 5. IMPORTANT: Copy Terraform state to Jenkins workspace after first run:
+    #    sudo cp kijani-capstone/terraform/terraform.tfstate \
+    #      /home/jenkins-agent/workspace/kijani-capstone/kijani-capstone/terraform/terraform.tfstate
+    #    sudo chown jenkins-agent:jenkins-agent \
+    #      /home/jenkins-agent/workspace/kijani-capstone/kijani-capstone/terraform/terraform.tfstate
+    #
+    #    If kijani-staging already exists in the cluster but not in state:
     #    cd terraform && terraform import kubernetes_namespace.staging kijani-staging && cd ..
 
     # 6. Configure staging with Ansible
