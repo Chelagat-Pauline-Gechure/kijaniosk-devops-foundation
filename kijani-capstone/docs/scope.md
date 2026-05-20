@@ -65,4 +65,4 @@ Track A: Infrastructure-First
 
 ## Architecture Diagram
 
-See docs/architecture.png
+![Architecture Diagram](docs/architecture.png)
