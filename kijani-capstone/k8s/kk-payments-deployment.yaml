@@ -5,7 +5,7 @@ metadata:
   labels:
     app: kk-payments
   annotations:
-    kubernetes.io/change-cause: "Initial production-approaching deployment: v1.1.0"
+    kubernetes.io/change-cause: "Restore good image after fault injection demo"
 spec:
   replicas: 3
   revisionHistoryLimit: 10
